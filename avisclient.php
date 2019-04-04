@@ -39,13 +39,49 @@ class AvisClient extends Module
 
     public function install()
     {
-        // vérification de l'installation
-        return parent::install();
+        if (Shop::isFeatureActive()) {
+            Shop::setContext(Shop::CONTEXT_ALL);
+        }
+
+        // enregistrer les hooks nécessaires à l'affichage
+        // initialiser le nom dans la BD
+        if (!parent::install() ||
+            !$this->registerHook('home') ||
+            !$this->registerHook('header') ||
+            !Configuration::updateValue('AVISCLIENT_NAME', 'Avis client')
+        ) {
+            return false;
+        }
+
+        return true;
     }
 
     public function uninstall()
     {
-        // lors de la désinstallation
-        return parent::uninstall();
+        // supprimer le contenu ajouté à la BD
+        if (!parent::uninstall() ||
+            !Configuration::deleteByName('AVISCLIENT_NAME')
+            ) {
+                return false;
+            }
+        
+        return true;
+    }
+
+    // affichage avec le hook Home
+    public function hookDisplayHome($params)
+    {
+        $this->context->smarty->assign([
+            'avisclient_name' => Configuration::get('AVISCLIENT_NAME'),
+            'avisclient_link' => $this->context->link->getModuleLink('avisclient', 'display')
+        ]);
+
+        return $this->display(__FILE__, 'avisclient.tpl');
+    }
+
+    // chargement du CSS et du JS
+    public function hookDisplayHeader()
+    {
+        $this->context->controller->addCSS($this->_path.'css/avisclient.css', 'all');
     }
 }
