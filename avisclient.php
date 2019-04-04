@@ -36,4 +36,16 @@ class AvisClient extends Module
             $this->warning = $this->l('Aucun nom renseigné.');
         }
     }
+
+    public function install()
+    {
+        // vérification de l'installation
+        return parent::install();
+    }
+
+    public function uninstall()
+    {
+        // lors de la désinstallation
+        return parent::uninstall();
+    }
 }
