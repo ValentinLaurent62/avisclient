@@ -10,11 +10,9 @@
             {/if}
             !
         </p>
-        <!--
         <ul>
-            <li><a href="{avisclient_link}" title="Cliquez ici">Cliquez moi !</a></li>
+            <li><a href="{$avisclient_link}" title="Cliquez ici">Cliquez moi !</a></li>
         </ul>
-        -->
     </div>
 </div>
 <!-- /Block avisclient -->
