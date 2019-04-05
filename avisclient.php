@@ -144,7 +144,7 @@ class AvisClient extends Module
         $helper->module = $this;
         $helper->name_controller = $this->name;
         $helper->token = Tools::getAdminTokenLite('AdminModules');
-        $helper->currentIndex = AdminController::$currentIndex.'&configure'.$this->name;
+        $helper->currentIndex = AdminController::$currentIndex.'&configure='.$this->name;
 
         $helper->default_form_language = $defaultLang;
         $helper->allow_employee_form_lang = $defaultLang;
