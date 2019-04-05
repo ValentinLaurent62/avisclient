@@ -84,4 +84,91 @@ class AvisClient extends Module
     {
         $this->context->controller->addCSS($this->_path.'css/avisclient.css', 'all');
     }
+
+    // validation du formulaire de configuration
+    public function getContent()
+    {
+        $output = null;
+
+        // lorsqu'un formulaire est envoyé
+        if(Tools::isSubmit('submit'.$this->name)) {
+
+            // récupérer la valeur du champ AVISCLIENT_NAME
+            $avisclientName = strval(Tools::getValue('AVISCLIENT_NAME'));
+
+            // vérifier sa validité, si ok, mettre à jour la configuration
+            if (
+                !$avisclientName ||
+                empty($avisclientName) ||
+                !Validate::isGenericName($avisclientName)
+            ) {
+                $output .= $this->displayError($this->l('Valeur de configuration invalide'));
+            } else {
+                Configuration::updateValue('AVISCLIENT_NAME', $avisclientName);
+                $output .= $this->displayConfirmation($this->l('Paramètres mis à jour'));
+            }
+        }
+
+        return $output.$this->displayForm();
+    }
+
+    // formulaire de configuration
+    public function displayForm()
+    {
+        // langage par défaut
+        $defaultLang = (int)Configuration::get('PS_LANG_DEFAULT');
+
+        // initialiser les champs
+        $fieldsForm[0]['form'] = [
+            'legend' => [
+                'title' => $this->l('Paramètres'),
+            ],
+            'input' => [
+                [
+                    'type' => 'text',
+                    'label' => $this->l('Valeur de configuration'),
+                    'name' => 'AVISCLIENT_NAME',
+                    'size' => 20,
+                    'required' => true
+                ]
+            ],
+            'submit' => [
+                'title' => $this->l('Enregistrer'),
+                'class' => 'btn btn-default pull-right'
+            ]
+        ];
+
+        // assistant formulaire
+        $helper = new HelperForm();
+
+        $helper->module = $this;
+        $helper->name_controller = $this->name;
+        $helper->token = Tools::getAdminTokenLite('AdminModules');
+        $helper->currentIndex = AdminController::$currentIndex.'&configure'.$this->name;
+
+        $helper->default_form_language = $defaultLang;
+        $helper->allow_employee_form_lang = $defaultLang;
+
+        // titre et barre d'outils
+        $helper->title = $this->displayName;
+        $helper->show_toolbar = true;
+        $helper->toolbar_scroll = true;
+        $helper->submit_action = 'submit'.$this->name;
+        $helper->toolbar_btn = [
+            'save' => [
+                'desc' => $this->l('Enregistrer'),
+                'href' => AdminController::$currentIndex.'&configure='.$this->name.'&save'.$this->name.
+                '&token='.Tools::getAdminTokenLite('AdminModules'),
+            ],
+            'back' => [
+                'href' => AdminController::$currentIndex.'&token='.Tools::getAdminTokenLite('AdminModules'),
+                'desc' => $this->l('Retour à la liste')
+            ]
+        ];
+
+        // charger la valeur courante
+        $helper->fields_value['AVISCLIENT_NAME'] = Configuration::get('AVISCLIENT_NAME');
+
+        return $helper->generateForm($fieldsForm);
+    }
 }
