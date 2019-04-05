@@ -1,5 +1,8 @@
 <?php
 
+// Inclusion du modèle Avis
+require_once _PS_MODULE_DIR_ . '/avisclient/classes/Avis.php';
+
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -53,19 +56,41 @@ class AvisClient extends Module
             return false;
         }
 
-        return true;
+        return _installSql();
+    }
+
+    // installation de la BD
+    protected function _installSql()
+    {
+        $sqlCreate = "CREATE TABLE `" . _DB_PREFIX_ . Avis::$definition['table'] . "` (
+            `id_avis` int(11) unsigned NOT NULL AUTO_INCREMENT,
+            `titre` varchar(255) DEFAULT NULL,
+            `contenu` TEXT,
+            `date_add` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+            `date_upd` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY (`id_avis`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=latin1;";
+
+        return Db::getInstance()->execute($sqlCreate);
     }
 
     public function uninstall()
     {
-        // supprimer le contenu ajouté à la BD
+        // supprimer la configuration
         if (!parent::uninstall() ||
             !Configuration::deleteByName('AVISCLIENT_NAME')
             ) {
                 return false;
             }
         
-        return true;
+        return _uninstallSql();
+    }
+
+    // désinstallation de la BD
+    protected function _uninstallSql()
+    {
+        $sql = "DROP TABLE ". _DB_PREFIX_ .Avis::$definition['table'];
+        return Db::getInstance()->execute($sql);
     }
 
     // affichage avec le hook Home

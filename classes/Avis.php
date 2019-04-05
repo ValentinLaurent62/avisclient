@@ -12,7 +12,6 @@ class Avis extends ObjectModel
         'fields' => array(
             'titre' => array('type' => self::TYPE_STRING, 'required' => TRUE),
             'contenu' => array('type' => self::TYPE_STRING, 'required' => TRUE),
-            'date_ajout' => array('type' => self::TYPE_DATE, 'validate' => 'isDateFormat')
         )
     );
 }
