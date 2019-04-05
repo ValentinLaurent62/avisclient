@@ -4,7 +4,6 @@ class Avis extends ObjectModel
     public $id_avis;
     public $titre;
     public $contenu;
-    public $date_ajout;
 
     public static $definition = array(
         'table' => 'avis',
