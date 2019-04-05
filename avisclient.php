@@ -9,16 +9,6 @@ if (!defined('_PS_VERSION_')) {
 
 class AvisClient extends Module
 {
-
-    public $tabs = array(
-        array(
-            'name' => 'Avis client',
-            'class_name' => 'AdminAvis',
-            'visible' => true,
-            'parent_class_name' => 'ShopParameters',
-        )
-    );
-    
     public function __construct()
     {
         // infos module
@@ -65,7 +55,7 @@ class AvisClient extends Module
             return false;
         }
 
-        return $this->_installSql();
+        return $this->_installSql() && $this->_installTab();
     }
 
     // installation de la BD
@@ -83,6 +73,30 @@ class AvisClient extends Module
         return Db::getInstance()->execute($sqlCreate);
     }
 
+    // installation de la tab dans le backoffice
+    protected function _installTab()
+    {
+        $tab = new Tab();
+        $tabName = 'Avis client';
+        // il faut définir le nom pour chaque langue
+        foreach(Language::getLanguages(false) as $lang){
+            $tab->name[(int) $lang['id_lang']] = $tabName;
+        }
+        $tab->class_name = 'AdminAvis';
+        $tab->module = $this->name;
+        $tab->id_parent = (int)Tab::getIdFromClassName('CONFIGURE');
+        $tab->icon = 'settings_applications';
+
+        try {
+            $tab->save();
+        } catch (Exception $e) {
+            echo $e->getMessage();
+            return false;
+        }
+
+        return true;
+    }
+
     public function uninstall()
     {
         // supprimer la configuration
@@ -92,7 +106,7 @@ class AvisClient extends Module
                 return false;
             }
         
-        return $this->_uninstallSql();
+        return $this->_uninstallSql() && $this->_uninstallTab();
     }
 
     // désinstallation de la BD
@@ -100,6 +114,22 @@ class AvisClient extends Module
     {
         $sql = "DROP TABLE ". _DB_PREFIX_ .Avis::$definition['table'];
         return Db::getInstance()->execute($sql);
+    }
+
+    // désinstallation dans le backoffice
+    protected function _uninstallTab()
+    {
+        $idTab = (int)Tab::getIdFromClassName('AdminAvis');
+        if($idTab) {
+            $tab = new Tab($idTab);
+            try {
+                $tab->delete();
+            } catch (Exception $e) {
+                echo $e->getMessage();
+                return false;
+            }
+        }
+        return true;
     }
 
     // affichage avec le hook Home
