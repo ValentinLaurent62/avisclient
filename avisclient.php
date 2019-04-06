@@ -65,8 +65,8 @@ class AvisClient extends Module
             `id_avis` int(11) unsigned NOT NULL AUTO_INCREMENT,
             `titre` varchar(255) DEFAULT NULL,
             `contenu` TEXT,
-            `date_add` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-            `date_upd` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+            `date_add` datetime DEFAULT CURRENT_TIMESTAMP,
+            `date_upd` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             PRIMARY KEY (`id_avis`)
             ) ENGINE=InnoDB DEFAULT CHARSET=latin1;";
 
@@ -135,9 +135,18 @@ class AvisClient extends Module
     // affichage avec le hook Home
     public function hookDisplayHome($params)
     {
+        // récupérer un avis au hasard
+        $sql = new DbQuery();
+        $sql->select('*');
+        $sql->from(Avis::$definition['table']);
+        $sql->orderBy('RAND()');
+        $sql->limit(1);
+        $query = Db::getInstance()->executeS($sql);
+
         $this->context->smarty->assign([
             'avisclient_name' => Configuration::get('AVISCLIENT_NAME'),
-            'avisclient_link' => $this->context->link->getModuleLink('avisclient', 'display')
+            'avisclient_link' => $this->context->link->getModuleLink('avisclient', 'display'),
+            'mon_avis' => $query
         ]);
 
         return $this->display(__FILE__, 'avisclient.tpl');
