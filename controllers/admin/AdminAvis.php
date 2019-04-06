@@ -34,4 +34,49 @@ class AdminAvisController extends ModuleAdminController
         $this->addRowAction('edit');
         $this->addRowAction('delete');
     }
+
+    // affichage du formulaire d'ajout d'avis
+    public function renderForm()
+    {
+        $this->display = 'edit';
+        $this->initToolbar();
+
+        $this->fields_form = [
+            'tinymce' => TRUE,
+            // entête
+            'legend' => [
+                'title' => $this->l('Modifier avis'),
+                'icon' => 'icon-cog'
+            ],
+            // champs
+            'input' => [
+                [
+                    // titre de l'avis
+                    'type' => 'text',
+                    'label' => $this->l('Titre'),
+                    'name' => 'titre',
+                    'class' => 'input fixed-width-sm',
+                    'size' => 50,
+                    'required' => true,
+                    'empty_message' => $this->l('Veuillez renseigner un titre'),
+                    'hint' => $this->l('Donner un titre')
+                ],
+                [
+                    // contenu de l'avis
+                    'type' => 'textarea',
+                    'label' => $this->l('Contenu'),
+                    'name' => 'contenu',
+                    'required' => true,
+                    'lang' => false,
+                    'autoload_rte' => true
+                ],
+            ],
+            // soumission
+            'submit' => [
+                'title' => $this->l('Enregistrer'),
+            ]
+        ];
+
+        return parent::renderForm();
+    }
 }
