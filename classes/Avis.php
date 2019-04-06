@@ -8,6 +8,7 @@ class Avis extends ObjectModel
     public static $definition = array(
         'table' => 'avis',
         'primary' => 'id_avis',
+        'multilang' => false,
         'fields' => array(
             'titre' => array('type' => self::TYPE_STRING, 'required' => TRUE),
             'contenu' => array('type' => self::TYPE_STRING, 'required' => TRUE),

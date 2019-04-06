@@ -9,7 +9,7 @@ class AdminAvisController extends ModuleAdminController
         $this->table = Avis::$definition['table'];
         $this->identifier = Avis::$definition['primary'];
         $this->className = Avis::class;
-        $this->lang = true;
+        $this->lang = false;
 
         parent::__construct();
 
